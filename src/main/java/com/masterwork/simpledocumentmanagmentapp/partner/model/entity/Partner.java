@@ -1,6 +1,7 @@
 package com.masterwork.simpledocumentmanagmentapp.partner.model.entity;
 
 import com.masterwork.simpledocumentmanagmentapp.document.model.entity.Document;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,6 +15,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity(name = "partners")
 public class Partner {
 

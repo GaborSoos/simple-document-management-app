@@ -10,13 +10,13 @@ DELETE FROM users;
 INSERT INTO users (id, username, firstname, lastname, password, enabled) VALUES
 (1, 'johndoe', 'John' , 'Doe', '$2a$10$fdfwiDTCQjarhj7U80RgJuImLhSOAKpOLXJYPtY15xpSyMWW.HfRy', 1),
 (2, 'janedoe', 'Jane', 'Doe', '$2a$10$fdfwiDTCQjarhj7U80RgJuImLhSOAKpOLXJYPtY15xpSyMWW.HfRy', 1),
-(3, 'gipszjakab', 'Jakab', 'Gipsz', '$2a$10$b7wnqdlcepRbdn.PFKww8e11aZaLdZtOGl8RVNkd1mKFuWRzA/IpK', 1),
-(4, 'hackelek', 'Elek', 'Hack', '$2a$10$b7wnqdlcepRbdn.PFKww8e11aZaLdZtOGl8RVNkd1mKFuWRzA/IpK', 0);
+(3, 'gipszjakab', 'Jakab', 'Gipsz', '$2a$10$fdfwiDTCQjarhj7U80RgJuImLhSOAKpOLXJYPtY15xpSyMWW.HfRy', 1),
+(4, 'hackelek', 'Elek', 'Hack', '$2a$10$fdfwiDTCQjarhj7U80RgJuImLhSOAKpOLXJYPtY15xpSyMWW.HfRy', 0);
 
 INSERT INTO roles (id, name, enabled) VALUES
-(1, 'ADMIN', 1),
-(2, 'USER', 1),
-(3, 'GUEST', 1);
+(1, 'ROLE_ADMIN', 1),
+(2, 'ROLE_USER', 1),
+(3, 'ROLE_GUEST', 1);
 
 INSERT INTO user_roles (id, user_id, role_id, enabled) VALUES
 (1, 1, 2, 1),

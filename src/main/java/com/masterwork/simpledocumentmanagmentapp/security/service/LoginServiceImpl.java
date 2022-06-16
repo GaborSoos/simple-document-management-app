@@ -1,5 +1,6 @@
 package com.masterwork.simpledocumentmanagmentapp.security.service;
 
+import com.masterwork.simpledocumentmanagmentapp.exception.ForbiddenActionException;
 import com.masterwork.simpledocumentmanagmentapp.security.model.dto.LoginReqDto;
 import com.masterwork.simpledocumentmanagmentapp.security.model.dto.LoginResDto;
 import com.masterwork.simpledocumentmanagmentapp.security.model.entity.UserDetailsImpl;
@@ -20,7 +21,7 @@ public class LoginServiceImpl implements LoginService {
 
   private final UserServiceImpl userServiceImpl;
   private final PasswordEncoder passwordEncoder;
-  //TODO
+
   @Value("${security.jwt-key:}")
   private String jwtKey;
 
@@ -29,15 +30,14 @@ public class LoginServiceImpl implements LoginService {
     this.passwordEncoder = passwordEncoder;
   }
 
-  //Todo: create new exceptions: e.g. RequestedResourceForbidenException
   @Override
   public LoginResDto authenticateUser(LoginReqDto loginReqDto) {
     UserDetailsImpl userDetails = (UserDetailsImpl) userServiceImpl.loadUserByUsername(loginReqDto.getUserName());
     if(!passwordEncoder.matches(loginReqDto.getPassword(), userDetails.getPassword())) {
-      throw new RuntimeException("Password is incorrect.");
+      throw new ForbiddenActionException("Password is incorrect.");
     }
     if(!userDetails.isEnabled()) {
-      throw new RuntimeException("Requested user is not enabled.");
+      throw new ForbiddenActionException("Requested user is not enabled.");
     }
     return new LoginResDto("successful authentication", generateJwtString(userDetails));
   }

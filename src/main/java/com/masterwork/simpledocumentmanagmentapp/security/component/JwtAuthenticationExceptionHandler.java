@@ -14,7 +14,7 @@ import java.io.PrintWriter;
 
 @Component
 public class JwtAuthenticationExceptionHandler implements AuthenticationEntryPoint {
-  //TODO: what contain authException.getMessage????
+
   @Override
   public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)
       throws IOException, ServletException {

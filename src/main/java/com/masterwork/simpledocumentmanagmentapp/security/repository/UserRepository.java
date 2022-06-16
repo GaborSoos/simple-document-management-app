@@ -16,4 +16,6 @@ public interface UserRepository extends CrudRepository<User, Long> {
   @Transactional
   void deleteByUserName(String userName);
 
+  boolean existsByUserName(String userName);
+
 }

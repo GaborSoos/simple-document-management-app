@@ -95,7 +95,6 @@ public class DocTypeServiceTest {
 
   @Test
   public void when_findAllDocumentTagAndThereIsNotInDB_should_throwAppropriateException() {
-    when(docTypeRepository.findAll()).thenReturn(Collections.emptyList());
     String expectedMessage = "Requested resource is not found";
 
     Exception actualException =

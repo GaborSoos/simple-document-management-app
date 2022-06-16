@@ -1,5 +1,6 @@
 package com.masterwork.simpledocumentmanagmentapp.security.filter;
 
+import com.masterwork.simpledocumentmanagmentapp.exception.JWTokenException;
 import com.masterwork.simpledocumentmanagmentapp.security.model.entity.UserDetailsImpl;
 import com.masterwork.simpledocumentmanagmentapp.security.service.UserServiceImpl;
 import io.jsonwebtoken.*;
@@ -7,7 +8,6 @@ import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -36,7 +36,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
       throws ServletException, IOException {
+
     String token = getJWTfromRequest(request);
+    if(token == null) {
+      filterChain.doFilter(request, response);
+      return;
+    }
     SecretKey key = Keys.hmacShaKeyFor(
         getJWT_KEY().getBytes(StandardCharsets.UTF_8));
     UserDetailsImpl userDetails = convert(token, key);
@@ -58,8 +63,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     if(bearerToken != null && bearerToken.startsWith("Bearer ")) {
       return bearerToken.substring(7, bearerToken.length());
     } else {
-      //TODO: cserélni
-      throw new RuntimeException("Invalid JWT token.");
+      //throw new JWTokenException("Invalid JWT token.");
+      return null;
     }
   }
 
@@ -72,17 +77,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
           .getBody();
       String userName = String.valueOf(claims.get("username"));
       return (UserDetailsImpl) userServiceImpl.loadUserByUsername(userName);
-          //TODO: cserélni az exceptionokat
     } catch (SignatureException e) {
-      throw new RuntimeException("Invalid JWT signature");
+      throw new JWTokenException("Invalid JWT signature");
     } catch (MalformedJwtException e) {
-      throw new RuntimeException("Invalid JWT token");
+      throw new JWTokenException("Invalid JWT token");
     } catch (ExpiredJwtException e) {
-      throw new RuntimeException("Expired JWT token");
+      throw new JWTokenException("Expired JWT token");
     } catch (UnsupportedJwtException e) {
-      throw new RuntimeException("Unsupported JWT token");
+      throw new JWTokenException("Unsupported JWT token");
     } catch (IllegalArgumentException e) {
-      throw new RuntimeException("JWT claims string is empty");
+      throw new JWTokenException("JWT claims string is empty");
     }
   }
 

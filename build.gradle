@@ -13,6 +13,8 @@ plugins {
     id 'java'
 }
 
+apply plugin: 'jacoco'
+
 group = 'com.masterwork'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.8'
@@ -22,6 +24,13 @@ configurations {
     runtimeClasspath {
         extendsFrom developmentOnly
     }
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled false
+        html.enabled true
+        html.destination file("${buildDir}/jacoco")    }
 }
 
 repositories {
@@ -38,6 +47,7 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-api:0.11.2'
     implementation 'com.google.code.gson:gson:2.9.0'
     implementation 'junit:junit:4.13.1'
+    implementation 'io.springfox:springfox-boot-starter:3.0.0'
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'mysql:mysql-connector-java'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.2'

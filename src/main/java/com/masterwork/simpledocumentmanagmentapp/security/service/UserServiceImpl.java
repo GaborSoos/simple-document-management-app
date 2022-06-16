@@ -1,5 +1,6 @@
 package com.masterwork.simpledocumentmanagmentapp.security.service;
 
+import com.masterwork.simpledocumentmanagmentapp.exception.RequestCauseConflictException;
 import com.masterwork.simpledocumentmanagmentapp.exception.RequestedResourceNotFoundException;
 import com.masterwork.simpledocumentmanagmentapp.security.model.dto.RoleDto;
 import com.masterwork.simpledocumentmanagmentapp.security.model.dto.UserReqDto;
@@ -38,10 +39,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
   }
 
   @Override
+  public User findByName(String userName) {
+    return userRepository.findByUserName(userName)
+        .orElseThrow(() -> new RequestedResourceNotFoundException("Not exisiting username: " + userName));
+  }
+
+  @Override
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-    User user = userRepository.findByUserName(username)
-        .orElseThrow(() -> new UsernameNotFoundException("Not exisiting username: " + username));
-    return new UserDetailsImpl(user);
+    return new UserDetailsImpl(findByName(username));
   }
 
   @Override
@@ -52,12 +57,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     } else {
       return convertToDtoList(users);
     }
-  }
-
-  @Override
-  public User findByName(String userName) {
-    return userRepository.findByUserName(userName)
-        .orElseThrow(() -> new RequestedResourceNotFoundException("Requested resource is not found"));
   }
 
   @Override
@@ -78,30 +77,31 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     return usersDto;
   }
 
-  // TODO: validation + check already exist e.g. findByName
   @Override
   public User createUser(UserReqDto userReqDto) {
-    return userRepository.save(
-        new User(
-            userReqDto.getUserName(),
-            userReqDto.getFirstName(),
-            userReqDto.getLastName(),
-            passwordEncoder.encode(userReqDto.getPassword()),
-            userReqDto.getEnabled()
-        )
-    );
+    if(userRepository.existsByUserName(userReqDto.getUserName())) {
+      throw new RequestCauseConflictException("User is (" + userReqDto.getUserName() + ") already exist.");
+    } else {
+      return userRepository.save(
+          new User(
+              userReqDto.getUserName(),
+              userReqDto.getFirstName(),
+              userReqDto.getLastName(),
+              passwordEncoder.encode(userReqDto.getPassword()),
+              userReqDto.getEnabled()
+          )
+      );
+    }
   }
 
   @Override
   public UserResDto modifyBaseUserData(UserReqDto userReqDto) {
-    User user = userRepository.findByUserName(userReqDto.getUserName()).orElseThrow(
-        () -> new RequestedResourceNotFoundException("Requested resource is not found")
-    );
+    User user = findByName(userReqDto.getUserName());
     user.setUserName(userReqDto.getUserName());
     user.setFirstName(userReqDto.getFirstName());
     user.setLastName(userReqDto.getLastName());
     user.setPassword(passwordEncoder.encode(userReqDto.getPassword()));
-    if(userReqDto != null) {
+    if(userReqDto.getEnabled() != null) {
       user.setEnabled(userReqDto.getEnabled());
     }
     return convertToResDto(userRepository.save(user));
@@ -109,7 +109,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
   @Override
   public void deleteUser(String userName) {
-    userRepository.deleteByUserName(userName);
+    userRepository.delete(findByName(userName));
   }
 
   @Override

@@ -93,7 +93,6 @@ public class DocTagServiceTest {
 
   @Test
   public void when_findAllDocumentTagAndThereIsNotInDB_should_throwAppropriateException() {
-    when(docTagRepository.findAll()).thenReturn(Collections.emptyList());
     String expectedMessage = "Requested resource is not found";
 
     Exception actualException =

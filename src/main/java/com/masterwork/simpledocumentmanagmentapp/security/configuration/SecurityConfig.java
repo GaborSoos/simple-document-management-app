@@ -11,7 +11,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -48,15 +47,15 @@ public class SecurityConfig {
         .cors()
         .and()
         .csrf().disable()
-        .exceptionHandling()
-        .authenticationEntryPoint(jwtAuthExceptionHandler)
-        .and()
         .sessionManagement()
         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         .and()
         .authorizeRequests()
         .antMatchers(PRIVATE_ENDPOINTS).authenticated()
-        .antMatchers("/**").permitAll();
+        .antMatchers("/**").permitAll()
+        .and()
+        .exceptionHandling()
+        .authenticationEntryPoint(jwtAuthExceptionHandler);
     http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
     return http.build();
